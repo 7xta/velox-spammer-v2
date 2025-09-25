@@ -93,15 +93,11 @@ intents.members = True
 guild_voice_states = True
 
 
-
-
 #prefixe                                 
 comenzi_prefix='$',                                                 
 stream_prefix='#', 
 client_streaming = commands.Bot(command_prefix=stream_prefix,self_bot=True,intents=intents)
 bot = commands.Bot(command_prefix=comenzi_prefix, self_bot=True, intents=intents)
-
-
 
 
 
@@ -282,6 +278,39 @@ async def stream(ctx, *, game: str):
 async def stopstream(ctx):
     await bot.change_presence(activity=None)
     await ctx.message.delete()
+#massreact
+@bot.command()
+async def massreact(ctx, number=None, emote=None):
+    number = int(number)
+    await ctx.message.delete()
+    messages = await ctx.message.channel.history(limit=number).flatten()
+    for message in messages:
+        try:
+            await message.add_reaction(emote)
+        except Exception:
+            continue
+
+@bot.command()
+async def react(ctx, emoji: str = None):
+
+
+
+    bot.monkreact = emoji
+
+
+@bot.event
+async def on_message(message):
+
+    if message.author == bot.user:
+
+        if hasattr(bot, 'monkreact'):
+            try:
+                await message.add_reaction(bot.monkreact)
+            except:
+                print(f"nu merge sa dea react {bot.monkreact}")
+
+
+    await bot.process_commands(message)
 
 
 
@@ -296,8 +325,6 @@ if __name__ == "__main__":
         )
 
     loop.run_until_complete(main()) 
-
-
 
 
 
